@@ -15,22 +15,23 @@ def monthdeltab(date, delta):
 
 def graph():
     x=0
-    temperature=26
+
     comma=""
     finaldate=datetime.datetime.now()
     finaldate=monthdeltab(finaldate, -1)
     d = finaldate - timedelta(days=1)
     w = finaldate - timedelta(days=7)
-    #finaldate=finaldate.strftime('%Y,%m,%d,%H,%M')
+    finaldate=finaldate.strftime('%Y,%m,%d,%H,%M')
+    d=d.strftime('%Y,%m,%d,%H,%M')
+    w=w.strftime('%Y,%m,%d,%H,%M')
     # finaldate=str(finaldate)
     conn = sqlite3.connect("main.db")
     c = conn.cursor()
-    c.execute("INSERT INTO main VALUES (?,?)",(finaldate,temperature))
     c.execute('SELECT * FROM main')
     alltime = c.fetchall()
-    c.execute("SELECT * FROM main where datetime(Date) >= ?",(d,))
+    c.execute("SELECT * FROM main where Date >= ?",(d,))
     day= c.fetchall()
-    c.execute("SELECT * FROM main where datetime(Date) >= ?",(w,))
+    c.execute("SELECT * FROM main where Date >= ?",(w,))
     week= c.fetchall()
 
     with open('chart1D.js','w') as chart:

@@ -44,11 +44,10 @@ def datarecord(temperature):
      #       (date text,temp real)''')
 
     #Grabs Current Time and formats it
-    time=datetime.datetime.now()
-    finaldate=monthdeltab(time, -1)
+    finaldate=datetime.datetime.now()
+    finaldate=monthdeltab(finaldate, -1)
     finaldate=finaldate.strftime('%Y,%m,%d,%H,%M')
-    time=(str(finaldate)[:-10])
-    c.execute("INSERT INTO main VALUES (?,?)",(time,temperature))
+    c.execute("INSERT INTO main VALUES (?,?)",(finaldate,temperature))
     conn.commit()
     conn.close()
 
@@ -56,13 +55,21 @@ def datarecord(temperature):
 def graph():
     x=0
     comma=""
+
+    finaldate=datetime.datetime.now()
+    finaldate=monthdeltab(finaldate, -1)
+    d = finaldate - timedelta(days=1)
+    w = finaldate - timedelta(days=7)
+    d=d.strftime('%Y,%m,%d,%H,%M')
+    w=w.strftime('%Y,%m,%d,%H,%M')
+    
     conn = sqlite3.connect("main.db")
     c = conn.cursor()
     c.execute('SELECT * FROM main')
     alltime = c.fetchall()
-    c.execute("SELECT * FROM main where Date <= strftime('%d,%m,%Y,%H,%M,%S',datetime(,'-24 hours'))")
+    c.execute("SELECT * FROM main where Date >= ?",(d,))
     day= c.fetchall()
-    c.execute("SELECT * FROM main where Date <= strftime('%d,%m,%Y,%H,%M,%S',datetime('now','-7 days'))")
+    c.execute("SELECT * FROM main where Date >= ?",(w,))
     week= c.fetchall()
 
     with open('chart1D.js','w') as chart:
