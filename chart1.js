@@ -6,7 +6,7 @@ function draw () {
 		},
 		axisX: {
 			labelFormatter: function (e) {
-				return CanvasJS.formatDate( e.value, "MMDDD HH:mm:ss");
+				return CanvasJS.formatDate( e.value, "DDDMM HH:mm");
 			},
 		},
 

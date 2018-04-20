@@ -29,6 +29,12 @@ def printlcd(temperature):
 
 
 
+def monthdeltab(date, delta):
+    m, y= (date.month+delta) % 12, date.year + ((date.month)+delta-1) // 12
+    if not m: m = 12
+    d = min(date.day, [31,
+        29 if y%4==0 and not y%400==0 else 28,31,30,31,30,31,31,30,31,30,31][m-1])
+    return date.replace(day=d,month=m, year=y)
 
 #Record Temp in database
 def datarecord(temperature):
@@ -38,9 +44,10 @@ def datarecord(temperature):
      #       (date text,temp real)''')
 
     #Grabs Current Time and formats it
-    time= time.replace(":",",")
-    time= time.replace("-",",")
-    time= time.replace(" ",",")
+    time=datetime.datetime.now()
+    finaldate=monthdeltab(time, -1)
+    finaldate=finaldate.strftime('%Y,%m,%d,%H,%M')
+    time=(str(finaldate)[:-10])
     c.execute("INSERT INTO main VALUES (?,?)",(time,temperature))
     conn.commit()
     conn.close()
@@ -53,9 +60,9 @@ def graph():
     c = conn.cursor()
     c.execute('SELECT * FROM main')
     alltime = c.fetchall()
-    c.execute('SELECT * FROM main WHERE time >= current_date - 1')
+    c.execute("SELECT * FROM main where Date <= strftime('%d,%m,%Y,%H,%M,%S',datetime(,'-24 hours'))")
     day= c.fetchall()
-    c.execute('SELECT * FROM main WHERE time >= current_date - 7')
+    c.execute("SELECT * FROM main where Date <= strftime('%d,%m,%Y,%H,%M,%S',datetime('now','-7 days'))")
     week= c.fetchall()
 
     with open('chart1D.js','w') as chart:
